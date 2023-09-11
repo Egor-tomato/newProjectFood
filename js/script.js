@@ -106,4 +106,53 @@ window.addEventListener('DOMContentLoaded', () => {
 
    setClock('.timer', deadline);
 
+   class MenuForm {
+      constructor(img, altimg, title, descr, price, parentSelector, ...classes) {
+         this.img = img;
+         this.altimg = altimg;
+         this.title = title;
+         this.descr = descr;
+         this.price = price;
+         this.USD = 27;
+         this.parents = document.querySelector(parentSelector);
+         this.classes = classes;
+         this.convector();
+
+      }
+      convector() {
+         this.price *= this.USD
+      }
+      render() {
+         const element = document.createElement('div');
+         this.classes.forEach(className => {
+            element.classList.add(className);
+         });
+         element.innerHTML = `
+                  <img src=${this.img} alt=${this.altimg}>
+                  <h3 class="menu__item-subtitle">${this.title}</h3>
+                  <div class="menu__item-descr">${this.descr}</div>
+                  <div class="menu__item-divider"></div>
+                  <div class="menu__item-price">
+                     <div class="menu__item-cost">Цена:</div>
+                     <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+                  </div>
+         `;
+         this.parents.append(element);
+      }
+   }
+
+   const addMenuResource = async (url) => {
+      const res = await fetch(url)
+      if (!res) {
+         throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+      }
+      return await res.json();
+   }
+
+   addMenuResource(' http://localhost:3000/menu')
+      .then(data => data.forEach(({ img, altimg, title, descr, price }) => {
+         new MenuForm(img, altimg, title, descr, price, '.menu .container', 'menu__item').render();
+      }));
+
+
 });
