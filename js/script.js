@@ -27,10 +27,46 @@ window.addEventListener('DOMContentLoaded', () => {
                hideTabContent();
                showTabContent(i);
             }
-         })
+         });
       }
-   })
+   });
 
    hideTabContent();
    showTabContent();
+
+   const modal = document.querySelector('.modal');
+   const modalTrigger = document.querySelectorAll('[data-modal]');
+
+   const timeModalOpen = setTimeout(openModal, 50000);
+
+   function openModal() {
+      modal.classList.add('show');
+      modal.classList.remove('hide');
+      document.body.style.overflow = 'hidden';
+      clearInterval(timeModalOpen);
+   }
+
+   function closeModal() {
+      modal.classList.add('hide');
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+   }
+
+   modalTrigger.forEach(item => {
+      item.addEventListener('click', openModal);
+   });
+
+   modal.addEventListener('click', event => {
+      if (event.target === modal || event.target.getAttribute('data-close') == '') {
+         closeModal();
+      }
+   });
+
+   window.addEventListener('keydown', event => {
+      if (event.code === 'Escape') closeModal();
+   });
+
+
+
+
 });
