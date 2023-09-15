@@ -344,5 +344,5 @@ window.addEventListener('DOMContentLoaded', () => {
          }
          dotsOpacity();
       });
-   })
+   });
 });
