@@ -237,40 +237,66 @@ window.addEventListener('DOMContentLoaded', () => {
 
    const wrapperSlide = document.querySelector('.offer__slider-wrapper'),
       fieldSlide = wrapperSlide.querySelector('.offer__slider-inner'),
-      slide = fieldSlide.querySelectorAll('.offer__slide'),
+      slides = fieldSlide.querySelectorAll('.offer__slide'),
       prevSlide = document.querySelector('.offer__slider-prev'),
       nextSlide = document.querySelector('.offer__slider-next'),
       width = window.getComputedStyle(wrapperSlide).width,
       total = document.querySelector('#total'),
-      current = document.querySelector('#current');
+      current = document.querySelector('#current'),
+      slider = document.querySelector('.offer__slider');
 
    let slideIndex = 1;
    let offset = 0;
 
-   if (slide.length < 10) {
-      total.textContent = `0${slide.length}`;
+   if (slides.length < 10) {
+      total.textContent = `0${slides.length}`;
       current.textContent = `0${slideIndex}`;
    } else {
-      total.textContent = slide.length;
+      total.textContent = slides.length;
       current.textContent = slideIndex;
    }
 
+   slides.forEach(slide => {
+      slide.style.width = width;
+   })
 
-   fieldSlide.style.width = 100 * slide.length + '%';
+   const widthSlide = +width.slice(0, width.length - 2);
+
+   fieldSlide.style.width = 100 * slides.length + '%';
    fieldSlide.style.display = 'flex';
    fieldSlide.style.transition = '0.5s all';
    wrapperSlide.style.overflow = 'hidden';
 
+   slider.style.position = 'relative';
+   const indicators = document.createElement('ol');
+   indicators.classList.add('carousel-indicators');
+   slider.append(indicators);
+   const dots = [];
+
+   for (let i = 0; i < slides.length; i++) {
+      const dot = document.createElement('li');
+      dot.setAttribute('data-slide-to', i + 1);
+      dot.classList.add('dot');
+      if (i == 0) dot.style.opacity = 1;
+      indicators.append(dot);
+      dots.push(dot)
+   }
+
+   function dotsOpacity() {
+      dots.forEach(dot => dot.style.opacity = '0.5');
+      dots[slideIndex - 1].style.opacity = 1;
+   }
+
    prevSlide.addEventListener('click', () => {
       if (offset == 0) {
-         offset = +width.slice(0, width.length - 2) * (slide.length - 1);
+         offset = widthSlide * (slides.length - 1);
       } else {
-         offset -= +width.slice(0, width.length - 2);
+         offset -= widthSlide;
       }
       fieldSlide.style.transform = `translate(-${offset}px)`;
 
       if (slideIndex == 1) {
-         slideIndex = slide.length;
+         slideIndex = slides.length;
       } else {
          slideIndex--;
       }
@@ -280,17 +306,18 @@ window.addEventListener('DOMContentLoaded', () => {
       } else {
          current.textContent = slideIndex;
       }
+      dotsOpacity();
    });
 
    nextSlide.addEventListener('click', () => {
-      if (offset == +width.slice(0, width.length - 2) * (slide.length - 1)) {
+      if (offset == widthSlide * (slides.length - 1)) {
          offset = 0;
       } else {
-         offset += +width.slice(0, width.length - 2)
+         offset += widthSlide;
       }
       fieldSlide.style.transform = `translate(-${offset}px)`;
 
-      if (slideIndex == slide.length) {
+      if (slideIndex == slides.length) {
          slideIndex = 1;
       } else {
          slideIndex++;
@@ -301,6 +328,21 @@ window.addEventListener('DOMContentLoaded', () => {
       } else {
          current.textContent = slideIndex;
       }
-
+      dotsOpacity();
    });
+
+   dots.forEach(dot => {
+      dot.addEventListener('click', event => {
+         const slideTo = event.target.getAttribute('data-slide-to');
+         slideIndex = slideTo;
+         offset = widthSlide * (slideTo - 1)
+         fieldSlide.style.transform = `translate(-${offset}px)`;
+         if (slideIndex < 10) {
+            current.textContent = `0${slideIndex}`;
+         } else {
+            current.textContent = slideIndex;
+         }
+         dotsOpacity();
+      });
+   })
 });

@@ -1,2 +1,2 @@
 # newProjectFood
-https://Egor-tomato.github.io/newProjectFood/
+https://egor-tomato.github.io/newProjectFood/
